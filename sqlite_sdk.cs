@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Runtime;
 using System.Text;
 namespace sqlLiteClassApi
 {
@@ -196,6 +197,30 @@ namespace sqlLiteClassApi
             }
         }
 
+        // delete row based on a uniqe value EX: id
+
+        public int DeleteRow( string columnName, object value)
+        {
+            int rowsAffected = 0;
+            using (SQLiteConnection connection = new SQLiteConnection("Data Source=database.db;Version=3;"))
+            {
+                connection.Open();
+
+                // Construct the SQL command to delete the row
+                string sql = $"DELETE FROM {tableName} WHERE {columnName} = @value;";
+
+                using (SQLiteCommand command = new SQLiteCommand(sql, connection))
+                {
+                    // Add parameter to prevent SQL injection
+                    command.Parameters.AddWithValue("@value", value);
+                     rowsAffected = command.ExecuteNonQuery();
+                }
+
+                connection.Close();
+                return rowsAffected;
+            }
+        }
+
         //serach tabel
 
         public List<List<object>> SearchTable( string[] columns = null, string condition = "1=1")
@@ -264,6 +289,46 @@ namespace sqlLiteClassApi
 
             return result;
         }
+
+
+        //order tabel
+        public List<List<object>> GetOrderedRows( string orderByColumn, bool ascending = true)
+        {
+            // List to store the ordered results
+            List<List<object>> result = new List<List<object>>();
+
+            using (SQLiteConnection connection = new SQLiteConnection("Data Source=database.db;Version=3;"))
+            {
+                connection.Open();
+
+                // Construct the SQL command to select all rows ordered by the specified column 
+                string sql = $"SELECT * FROM {tableName} ORDER BY {orderByColumn} {(ascending ? "ASC" : "DESC")};";
+
+                using (SQLiteCommand command = new SQLiteCommand(sql, connection))
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    // Read each row and add it to the result list
+                    while (reader.Read())
+                    {
+                        List<object> row = new List<object>();
+
+                        // Populate the row with values from the database
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            row.Add(reader.GetValue(i));
+                        }
+
+                        // Add the row to the result list
+                        result.Add(row);
+                    }
+                }
+
+                connection.Close();
+            }
+
+            return result;
+        }
+
         //list all coulmns info
         public List<List<string>> GetColumnInfo()
         {
@@ -335,4 +400,4 @@ namespace sqlLiteClassApi
     }
 
     
-}
+} 
