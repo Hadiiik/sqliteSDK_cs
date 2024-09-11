@@ -13,7 +13,13 @@ public Table(string tableName)
   - `tableName`: The name of the table to be created or interacted with.
 
 ### Methods
-
+* CreateTable
+* InsertRow
+* InsertRows
+* UpdateRow
+* UpdateValue
+* PrintTable
+---
 #### `CreateTable`
 ```csharp
 public void CreateTable(string[,] columns)
