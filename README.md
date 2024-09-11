@@ -18,6 +18,7 @@ public Table(string tableName)
 * InsertRows
 * UpdateRow
 * UpdateValue
+* DeleteRow
 * PrintTable
 ---
 #### `CreateTable`
@@ -86,6 +87,17 @@ public List<List<object>> SearchTable(string[] columns = null, string condition 
 
 - *Description*:
   Retrieves data from the table based on the specified columns and condition.
+
+  #### `DeleteRow`
+```csharp
+public int DeleteRow( string columnName, object value)
+```
+- *Parameters*:
+  - columnName: The column name used to identify the row to delete (typically a unique identifier).
+  - value: The value to match in the specified column to identify the row to delete.
+
+- *Description*:
+  The `DeleteRow` method removes a row from a specified table where the value in a given column matches the provided value.
 
 #### `PrintTable`
 ```csharp
