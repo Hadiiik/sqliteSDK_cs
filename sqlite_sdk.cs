@@ -264,7 +264,40 @@ namespace sqlLiteClassApi
 
             return result;
         }
+        //list all coulmns info
+        public List<List<string>> GetColumnInfo()
+        {
+            // Define a list to store column names and types
+            List<List<string>> columnsInfo = new List<List<string>>();
 
+            using (SQLiteConnection connection = new SQLiteConnection("Data Source=database.db;Version=3;"))
+            {
+                connection.Open();
+
+                // Query to get the column information for the given table
+                string sql = $"PRAGMA table_info({tableName});";
+
+                using (SQLiteCommand command = new SQLiteCommand(sql, connection))
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    // Read each column info row
+                    while (reader.Read())
+                    {
+                        // Column name and type
+                        string columnName = reader["name"].ToString();
+                        string columnType = reader["type"].ToString();
+
+                        // Create a list for the column info and add it to the main list
+                        List<string> columnDetails = new List<string> { columnName, columnType };
+                        columnsInfo.Add(columnDetails);
+                    }
+                }
+
+                connection.Close();
+            }
+
+            return columnsInfo;
+        }
         // Function to print the contents of the table
         public void PrintTable()
         {
@@ -301,4 +334,5 @@ namespace sqlLiteClassApi
         }
     }
 
+    
 }
